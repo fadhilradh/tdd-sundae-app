@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import SummaryForm from "../SummaryForm";
 
 test("initial conditions", () => {
@@ -22,9 +23,31 @@ test("checking checkbox enables button and vice versa", () => {
    const submitButton = screen.getByRole("button", {
       name: /confirm order/i,
    });
-   fireEvent.click(checkbox);
+   userEvent.click(checkbox);
    expect(submitButton).toBeEnabled();
 
-   fireEvent.click(checkbox);
+   userEvent.click(checkbox);
    expect(submitButton).toBeDisabled();
+});
+
+test("popover responds to hover", () => {
+   // starts out hidden
+   render(<SummaryForm />);
+   const nullPopover = screen.queryByText(
+      /no ice cream will actually be delivered/i
+   );
+   expect(nullPopover).not.toBeInTheDocument();
+
+   //appears on hover
+   const termsAndCond = screen.getByText(/terms and conditions/i);
+   userEvent.hover(termsAndCond);
+
+   const popover = screen.getByText(/no ice cream will actually be delivered/i);
+   expect(popover).toBeInTheDocument();
+
+   userEvent.unhover(termsAndCond);
+   const nullPopoverAgain = screen.queryByText(
+      /no ice cream will actually be delivered/i
+   );
+   expect(nullPopoverAgain).not.toBeInTheDocument();
 });
