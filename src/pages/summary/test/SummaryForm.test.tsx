@@ -1,4 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import {
+   render,
+   screen,
+   waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import SummaryForm from "../SummaryForm";
 
@@ -30,7 +34,7 @@ test("checking checkbox enables button and vice versa", () => {
    expect(submitButton).toBeDisabled();
 });
 
-test("popover responds to hover", () => {
+test("popover responds to hover", async () => {
    // starts out hidden
    render(<SummaryForm />);
    const nullPopover = screen.queryByText(
@@ -46,8 +50,7 @@ test("popover responds to hover", () => {
    expect(popover).toBeInTheDocument();
 
    userEvent.unhover(termsAndCond);
-   const nullPopoverAgain = screen.queryByText(
-      /no ice cream will actually be delivered/i
+   await waitForElementToBeRemoved(() =>
+      screen.queryByText(/no ice cream will actually be delivered/i)
    );
-   expect(nullPopoverAgain).not.toBeInTheDocument();
 });
